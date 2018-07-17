@@ -18,6 +18,8 @@ def getPreds2D(hm):
   return preds
 
 def getPredsZkr(HZr, xy2D):
+  # HZr: batch*21*320*320
+  # xy2D: batch*21*2
   assert len(HZr.shape) == 4, 'HZr must be a 4-D tensor'
   assert len(xy2D.shape) == 3, 'xy2D must be a 3-D tensor'
   Zkr_s = torch.zeros((HZr.shape[0], HZr.shape[1]))
@@ -44,20 +46,13 @@ def getPredsZroot(xy2D, Zkr_s):
   #exit(1)
   return Zroot_s
 
-def func(s, x):
-    """model data as y = s*x """
-    return s*x
-
-def err(s, y, x):
-    return y - func(s, x)
-
 def leastsq_s(XYZ_s):
   joints_connect = [[0,4], [4,3], [3,2], [2,1],
                     [0,8], [8,7], [7,6], [6,5],
                     [0,12], [12,11], [11,10], [10,9],
                     [0,16], [16,15], [15,14], [14,13],
                     [0,20], [20,19], [19,18], [18,17]]
-  x = torch.zeros((XYZ_s.shape[0], 20))
+  x = torch.zeros((XYZ_s.shape[0], 20)) # batch*20
   for num in range(20):
     x[:,i] = torch.sqrt(XYZ_s[:, joints_connect[i][0], :], XYZ_s[:, joints_connect[i][1], :])
   y = distance_joints = [0.0461266, 0.04512048, 0.03883177, 0.03410153, 0.10972843, 0.03997845,
@@ -65,6 +60,7 @@ def leastsq_s(XYZ_s):
   0.10341862, 0.03536041, 0.0310081,  0.03445587, 0.09839079, 0.03839774,
   0.02125731, 0.02470566]
 
-  s = 0.5
-  s, cov_x, infodic, mesg, ier = leastsq(err, p0, args=(y, x), full_output=True)
+  sumxy = torch.sum(x*y, 1)
+  sumxx = torch.sum(x**2, 1)
+  s = sumxy/sumxx
   return s
