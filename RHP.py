@@ -86,8 +86,9 @@ class RHP(data.Dataset):
     torch_out1 = torch.from_numpy(out1)
     torch_out2 = torch.from_numpy(out2)
     torch_K = torch.from_numpy(K)
+    torch_xy = torch.from_numpy(xy)
     torch_XYZ = torch.from_numpy(XYZ)
-    return torch_img, torch_out1, torch_out2, torch_K, torch_XYZ
+    return torch_img, torch_out1, torch_out2, torch_K, torch_xy, torch_XYZ
     
   def __len__(self):
     return len(self.annot)

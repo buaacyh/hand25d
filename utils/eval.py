@@ -28,12 +28,12 @@ def getPredsZkr(HZr, xy2D):
       Zkr_s[i, j] = HZr[i, j, xy2D[i, j, 0].to(torch.int32), xy2D[i, j, 1].to(torch.int32)]
   return Zkr_s
 
-def getPredsZroot(xy2D, Zkr_s):
-  assert len(xy2D.shape) == 3, 'xy2D must be a 3-D tensor'
-  assert len(Zkr_s.shape) == 2, 'Zkr_s must be a 2-D tensor'
-  # n is the joints 1, m is the joints 2
-  xn, xm = xy2D[:, 1, 0], xy2D[:, 2, 0]
-  yn, ym = xy2D[:, 1, 1], xy2D[:, 2, 1]
+def getPredsZroot(xy, XYZ):
+  assert len(xy.shape) == 3, 'xy2D must be a 3-D tensor'
+  assert len(XYZ.shape) == 3, 'Zkr_s must be a 3-D tensor'
+  # n is the joints 1, m is the joints root 0
+  xn, xm = xy[:, 1, 0], xy[:, 0, 0]
+  yn, ym = xy[:, 1, 1], xy[:, 0, 1]
   Znr, Zmr = Zkr_s[:, 1], Zkr_s[:, 2]
   a = (xn - xm)**2 + (yn - ym)**2
   b = Znr*(xn**2 + yn**2 - xn*xm - yn*ym) + Zmr*(xm**2 + ym**2 - xn*xm - yn*ym)

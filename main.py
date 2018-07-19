@@ -235,7 +235,7 @@ def train(train_loader, model, criterion, optimizer, epoch):
 
     end = time.time()
     t1 = time.time()
-    for i, (input, target_p, target_z, K, XYZ) in enumerate(train_loader):
+    for i, (input, target_p, target_z, K, xy, XYZ) in enumerate(train_loader):
         # measure data loading time
         data_time.update(time.time() - end)
         t2 = time.time()
@@ -371,11 +371,11 @@ def adjust_learning_rate(optimizer, epoch):
         param_group['lr'] = lr
 
 
-def accuracy(H2D, HZr, K, XYZ):
+def accuracy(H2D, HZr, K, xy, XYZ):
     """Computes the precision@k for the specified values of k"""
     xy2D = getPreds2D(H2D) # batch*21*2
     Zkr_s = getPredsZkr(HZr, xy2D) # batch*21
-    Zroot_s = getPredsZroot(xy2D, Zkr_s) # batch
+    Zroot_s = getPredsZroot(xy, XYZ) # batch
     Zroot_s = Zroot_s.unsqueeze(1).expand(Zroot_s.shape[0], 21)
     Zk_s = Zroot_s + Zkr_s # batch*21
     xy1 = torch.ones(xy2D.shape[0], xy2D.shape[1], 3) # batch*21*3
